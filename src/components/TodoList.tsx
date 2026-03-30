@@ -59,27 +59,78 @@ export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
   return (
     <div className="flex flex-col gap-8 h-full max-w-4xl mx-auto py-4">
       <style>{`
-        .quote-card { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; max-width: 450px; transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); margin-top: 40px; }
-        .quote-content { 
-          display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 36px; 
-          border-radius: 22px; color: #ffffff; background: #0a3cff; position: relative; z-index: 10; width: 100%;
-          transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        /* Lớp phụ 1 - Opacity 50% */
-        .quote-content::before { 
-          position: absolute; content: ""; top: -4%; left: 50%; width: 90%; height: 90%; transform: translate(-50%); 
-          background: #ced8ff; z-index: -1; opacity: 0.5; border-radius: inherit; transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); 
-        }
-        /* Lớp phụ 2 - Opacity 50% */
-        .quote-content::after { 
-          position: absolute; content: ""; top: -8%; left: 50%; width: 80%; height: 80%; transform: translate(-50%); 
-          background: #e7ecff; z-index: -2; opacity: 0.5; border-radius: inherit; transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); 
-        }
-        .quote-card:hover { transform: translateY(-15px); }
-        .quote-card:hover .quote-content::before { rotate: -8deg; top: 0; width: 100%; height: 100%; opacity: 0.7; }
-        .quote-card:hover .quote-content::after { rotate: 8deg; top: 0; width: 100%; height: 100%; opacity: 0.7; }
-      `}</style>
+  .quote-card { 
+    position: relative; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 100%; 
+    max-width: 480px; 
+    transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); 
+    margin-top: 50px; 
+  }
+  
+  .quote-content { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 20px; 
+    padding: 40px; 
+    border-radius: 28px; 
+    color: #ffffff; 
+    background: #0a3cff; /* Màu xanh đậm chủ đạo */
+    position: relative; 
+    z-index: 10; /* ĐẢM BẢO LỚP XANH Ở TRÊN CÙNG */
+    width: 100%;
+    box-shadow: 0 20px 40px rgba(10, 60, 255, 0.2);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
 
+  /* Lớp phụ 1: mờ 50% và nằm dưới */
+  .quote-content::before { 
+    position: absolute; 
+    content: ""; 
+    top: -6%; 
+    left: 50%; 
+    width: 90%; 
+    height: 90%; 
+    transform: translate(-50%); 
+    background: #ced8ff; 
+    z-index: -1; 
+    opacity: 0.5; 
+    border-radius: inherit; 
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); 
+  }
+
+  /* Lớp phụ 2: mờ 50% và nằm dưới cùng */
+  .quote-content::after { 
+    position: absolute; 
+    content: ""; 
+    top: -12%; 
+    left: 50%; 
+    width: 80%; 
+    height: 80%; 
+    transform: translate(-50%); 
+    background: #e7ecff; 
+    z-index: -2; 
+    opacity: 0.5; 
+    border-radius: inherit; 
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); 
+  }
+
+  /* Hiệu ứng xoay khi hover */
+  .quote-card:hover .quote-content { 
+    transform: translateY(-10px); 
+  }
+  .quote-card:hover .quote-content::before { 
+    transform: translate(-50%, 5%) rotate(-8deg); 
+    opacity: 0.7; 
+  }
+  .quote-card:hover .quote-content::after { 
+    transform: translate(-50%, 10%) rotate(8deg); 
+    opacity: 0.7; 
+  }
+`}</style>
       {/* PHẦN INPUT ĐỂ THÊM TASK - ĐẢM BẢO KHÔNG BỊ MẤT */}
       <div className="flex flex-col gap-4 z-20">
         <h2 className="text-4xl font-black tracking-tighter text-white">TASKS</h2>
