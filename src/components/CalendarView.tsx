@@ -61,7 +61,7 @@ export const CalendarView = ({ tasks, notes }: CalendarViewProps) => {
                         0px 0px 25px rgb(151, 243, 255), 
                         0px 0px 5px rgb(151, 243, 255);
             border: 2px solid rgb(255, 255, 255) !important;
-            background-color: rgba(146, 180, 184, 0.07) !important;
+            background-color: rgba(255, 255, 255, 0.3) !important;
             color: #1a202c !important;
           }
           .custom-scrollbar-light::-webkit-scrollbar { width: 4px; }
@@ -108,8 +108,9 @@ export const CalendarView = ({ tasks, notes }: CalendarViewProps) => {
     const dayNotes = notes.filter(n => isSameDay(new Date(n.updatedAt), selectedDate));
 
     return (
-      <Card className="w-96 bg-white border-none shadow-2xl flex flex-col gap-8 h-full text-black">
-        <div className="border-b border-gray-100 pb-6">
+      /* THAY THẾ Card BẰNG DIV TRẮNG SOLID 100% */
+      <div className="w-96 bg-white rounded-[32px] shadow-2xl flex flex-col p-8 overflow-hidden text-black border border-gray-100">
+        <div className="border-b border-gray-100 pb-6 mb-8">
           <h3 className="text-3xl font-black tracking-tighter text-black">
             {format(selectedDate, 'eeee')}
           </h3>
@@ -130,7 +131,7 @@ export const CalendarView = ({ tasks, notes }: CalendarViewProps) => {
                 <p className="text-xs text-gray-300 italic font-medium">No tasks for this day.</p>
               ) : (
                 dayTasks.map(task => (
-                  <div key={task.id} className="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-sm font-bold text-gray-800 shadow-sm flex items-center gap-3 transition-hover hover:border-blue-200">
+                  <div key={task.id} className="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-sm font-bold text-gray-800 shadow-sm flex items-center gap-3">
                     <div className={cn(
                       "w-2 h-2 rounded-full",
                       task.priority === 'high' ? "bg-red-500" : "bg-blue-400"
@@ -161,7 +162,7 @@ export const CalendarView = ({ tasks, notes }: CalendarViewProps) => {
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     );
   };
 
