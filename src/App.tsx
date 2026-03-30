@@ -11,6 +11,7 @@ import { MindMap } from './components/MindMap';
 import { CalendarView } from './components/CalendarView';
 import { View, Task, Note } from './types';
 import { motion, AnimatePresence } from 'motion/react';
+import { MusicPlayer } from './components/MusicPlayer'; // Import MusicPlayer
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('todo');
@@ -23,7 +24,7 @@ export default function App() {
     // Initial sample task as requested
     return [{
       id: 'sample-1',
-      text: 'Your To Do',
+      text: 'Your To Do List',
       completed: false,
       priority: 'high',
       tags: ['career'],
@@ -96,6 +97,9 @@ export default function App() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Music Player - Luôn hiển thị ở lớp trên cùng */}
+      <MusicPlayer />
 
       {/* Floating Decorative Blobs */}
       <div className="fixed -bottom-20 -left-20 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
