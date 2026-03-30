@@ -61,7 +61,7 @@ export const CalendarView = ({ tasks, notes }: CalendarViewProps) => {
                         0px 0px 25px rgb(151, 243, 255), 
                         0px 0px 5px rgb(151, 243, 255);
             border: 2px solid rgb(255, 255, 255) !important;
-            background-color: rgb(146, 180, 184) !important;
+            background-color: rgba(146, 180, 184, 0.07) !important;
             color: #1a202c !important;
           }
           .custom-scrollbar-light::-webkit-scrollbar { width: 4px; }
