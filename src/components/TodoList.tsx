@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, CheckCircle2, Circle, Quote as QuoteIcon } from 'lucide-react';
 import { Task } from '../types';
-import { Button } from './Button';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
+
+// Danh sách quote dự phòng
+const backupQuotes = [
+  { quote: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
+  { quote: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+  { quote: "Your mind is for having ideas, not holding them.", author: "David Allen" }
+];
 
 interface TodoListProps {
   tasks: Task[];
@@ -13,20 +19,19 @@ interface TodoListProps {
 
 export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
   const [newTask, setNewTask] = useState('');
-  const [quote, setQuote] = useState<{ quote: string; author: string } | null>(null);
+  const [quote, setQuote] = useState(backupQuotes[0]);
 
-  // Fetch Quote từ API Ninjas khi hết task
   useEffect(() => {
     if (tasks.length === 0) {
       const fetchQuote = async () => {
         try {
           const response = await fetch('https://api.api-ninjas.com/v2/randomquotes?categories=success,wisdom', {
-            headers: { 'X-Api-Key': '7rk4MKnNmwhwFUEsYxvJdVDwy1pqIoSvzDgzFAO9' }, // THAY KEY CỦA BẠN VÀO ĐÂY
+            headers: { 'X-Api-Key': '7rk4MKnNmwhwFUEsYxvJdVDwy1pqIoSvzDgzFAO9' },
           });
           const data = await response.json();
           if (data && data.length > 0) setQuote(data[0]);
         } catch (error) {
-          setQuote({ quote: "The only way to do great work is to love what you do.", author: "Steve Jobs" });
+          setQuote(backupQuotes[Math.floor(Math.random() * backupQuotes.length)]);
         }
       };
       fetchQuote();
@@ -42,7 +47,7 @@ export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
       completed: false,
       priority: 'medium',
       tags: [],
-      createdAt: Date.now(),
+      createdAt: Date.now()
     };
     setTasks([task, ...tasks]);
     setNewTask('');
@@ -57,96 +62,81 @@ export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-8 h-full max-w-4xl mx-auto py-4">
+    <div className="flex flex-col gap-8 h-full max-w-4xl mx-auto py-4 w-full">
       <style>{`
-        /* Khung chứa card */
-        .quote-card { 
-          position: relative; 
-          display: flex; 
-          align-items: center; 
-          justify-content: center; 
-          width: 100%; 
-          max-width: 480px; 
-          margin-top: 60px;
-          perspective: 1000px;
-        }
-        
-        /* THẺ CHÍNH MÀU XANH - PHẢI NẰM TRÊN CÙNG */
-        .quote-main-content { 
-          display: flex; 
-          flex-direction: column; 
-          align-items: flex-start; 
-          gap: 20px; 
-          padding: 40px; 
-          border-radius: 28px; 
-          color: #ffffff; 
-          background: #0a3cff !important; /* Xanh đậm đặc */
-          position: relative; 
-          z-index: 50; /* Z-INDEX cực cao để đè lên tất cả */
+        .quote-card-container {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           width: 100%;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-          transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+          min-height: 300px;
+          margin-top: 50px;
         }
 
-        /* Lớp phụ 1 (Mờ 50%) */
-        .layer-bg-1 {
+        .quote-main {
+          background: #0a3cff !important;
+          border-radius: 24px;
+          padding: 40px;
+          color: white;
+          width: 100%;
+          max-width: 450px;
+          position: relative;
+          z-index: 3; /* Cao nhất */
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          transition: all 0.4s ease;
+        }
+
+        .quote-layer-1 {
           position: absolute;
-          content: "";
-          top: -15px;
-          left: 50%;
+          background: #ced8ff;
           width: 90%;
           height: 100%;
-          transform: translateX(-50%);
-          background: #ced8ff;
-          z-index: 30; /* Nằm dưới lớp 50 */
-          opacity: 0.5;
-          border-radius: 28px;
-          transition: all 0.5s ease;
+          border-radius: 24px;
+          top: -10px;
+          z-index: 2; /* Dưới lớp chính */
+          opacity: 0.5; /* Mờ 50% */
+          transition: all 0.4s ease;
         }
 
-        /* Lớp phụ 2 (Mờ 50%) */
-        .layer-bg-2 {
+        .quote-layer-2 {
           position: absolute;
-          content: "";
-          top: -30px;
-          left: 50%;
+          background: #e7ecff;
           width: 80%;
           height: 100%;
-          transform: translateX(-50%);
-          background: #e7ecff;
-          z-index: 20; /* Nằm dưới cùng */
-          opacity: 0.5;
-          border-radius: 28px;
-          transition: all 0.5s ease;
+          border-radius: 24px;
+          top: -20px;
+          z-index: 1; /* Dưới cùng */
+          opacity: 0.5; /* Mờ 50% */
+          transition: all 0.4s ease;
         }
 
-        /* Hiệu ứng Hover */
-        .quote-card:hover .quote-main-content { transform: translateY(-10px); }
-        .quote-card:hover .layer-bg-1 { transform: translate(-50%, 5px) rotate(-8deg); opacity: 0.7; }
-        .quote-card:hover .layer-bg-2 { transform: translate(-50%, 10px) rotate(8deg); opacity: 0.7; }
+        .quote-card-container:hover .quote-main { transform: translateY(-5px); }
+        .quote-card-container:hover .quote-layer-1 { transform: rotate(-5deg) translateY(5px); opacity: 0.7; }
+        .quote-card-container:hover .quote-layer-2 { transform: rotate(5deg) translateY(10px); opacity: 0.7; }
       `}</style>
 
-      {/* PHẦN INPUT ĐỂ THÊM TASK - ĐẢM BẢO KHÔNG BỊ MẤT */}
-      <div className="flex flex-col gap-4 z-20">
-        <h2 className="text-4xl font-black tracking-tighter text-white">TASKS</h2>
-        <form onSubmit={addTask} className="flex gap-3 bg-white/10 p-2 rounded-[24px] border border-white/10 backdrop-blur-md shadow-2xl">
+      {/* Input Section - Phải luôn hiện */}
+      <div className="flex flex-col gap-4">
+        <h2 className="text-4xl font-black tracking-tighter text-white uppercase">Tasks</h2>
+        <form onSubmit={addTask} className="flex gap-3 bg-white/10 p-2 rounded-[24px] border border-white/10 backdrop-blur-md shadow-xl">
           <input
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Việc cần làm tiếp theo..."
-            className="flex-1 bg-transparent px-6 py-3 text-white outline-none placeholder:text-white/30 font-bold"
+            placeholder="Write your next task..."
+            className="flex-1 bg-transparent px-6 py-3 text-white outline-none font-bold placeholder:text-white/20"
           />
-          <button type="submit" className="bg-white text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-blue-50 transition-colors shadow-lg">
+          <button type="submit" className="bg-white text-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-blue-50 transition-all active:scale-90 shadow-lg">
             <Plus className="w-6 h-6" />
           </button>
         </form>
       </div>
 
-      {/* DANH SÁCH TASK HOẶC QUOTE CARD */}
-      <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar flex flex-col items-center">
+      {/* Content Area */}
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
         <AnimatePresence mode="popLayout">
           {tasks.length > 0 ? (
-            <div className="w-full">
+            <div className="flex flex-col gap-3">
               {tasks.map((task) => (
                 <motion.div
                   key={task.id}
@@ -154,7 +144,7 @@ export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="group flex items-center gap-4 bg-white/5 hover:bg-white/10 p-5 rounded-[24px] border border-white/5 mb-3 transition-all"
+                  className="group flex items-center gap-4 bg-white/5 hover:bg-white/10 p-5 rounded-[24px] border border-white/5 transition-all"
                 >
                   <button onClick={() => toggleTask(task.id)} className="text-white/40 hover:text-white">
                     {task.completed ? <CheckCircle2 className="w-6 h-6 text-emerald-400" /> : <Circle className="w-6 h-6" />}
@@ -162,26 +152,26 @@ export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
                   <span className={cn("flex-1 font-bold text-lg text-white", task.completed && "line-through opacity-30")}>
                     {task.text}
                   </span>
-                  <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400">
+                  <button onClick={() => deleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-all">
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </motion.div>
               ))}
             </div>
           ) : (
-            /* HIỂN THỊ QUOTE KHI KHÔNG CÓ TASK */
+            /* TRẠNG THÁI TRỐNG: HIỆN QUOTE */
             <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center justify-center py-10 w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="quote-card-container"
             >
-              <div className="quote-card">
-                <div className="quote-content">
-                  <QuoteIcon className="w-10 h-10 text-white/30 mb-2" />
-                  <p className="font-bold text-xl italic leading-relaxed">"{quote?.quote}"</p>
-                  <span className="text-sm font-black uppercase tracking-widest text-orange-400 mt-4">— {quote?.author}</span>
-                </div>
+              <div className="quote-main">
+                <QuoteIcon className="w-10 h-10 text-white/20 mb-4" />
+                <p className="font-bold text-xl italic leading-relaxed text-white">"{quote.quote}"</p>
+                <p className="text-orange-400 font-black uppercase tracking-widest mt-6 text-sm">— {quote.author}</p>
               </div>
-              <p className="text-white/20 font-black text-xs mt-12 tracking-[0.4em] uppercase">All caught up!</p>
+              <div className="quote-layer-1"></div>
+              <div className="quote-layer-2"></div>
             </motion.div>
           )}
         </AnimatePresence>
