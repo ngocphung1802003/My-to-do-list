@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  format, 
-  addMonths, 
-  subMonths, 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  isSameMonth, 
-  isSameDay, 
-  addDays, 
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  isSameMonth,
+  isSameDay,
+  addDays,
   eachDayOfInterval,
   isToday,
   startOfDay
@@ -30,35 +30,71 @@ export const CalendarView = ({ tasks, notes }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const renderHeader = () => {
-    return (
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight mb-1">
-            {format(currentMonth, 'MMMM yyyy')}
-          </h2>
-          <p className="text-white/50">Your schedule at a glance.</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
-            <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
-      </div>
-    );
-  };
+    const renderDays = () => {
+      const monthStart = startOfMonth(currentMonth);
+      const monthEnd = endOfMonth(monthStart);
+      const startDate = startOfWeek(monthStart);
+      const endDate = endOfWeek(monthEnd);
+      const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
 
-  const renderDays = () => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return (
+        <div className="grid grid-cols-7 gap-2">
+          <style>{`
+          .neon-day-active {
+            box-shadow: 0px 0px 5px rgb(151, 243, 255) inset,
+                        0px 0px 10px rgb(151, 243, 255) inset, 
+                        0px 0px 25px rgb(151, 243, 255), 
+                        0px 0px 5px rgb(151, 243, 255);
+            border: 2px solid rgb(255, 255, 255) !important;
+            background-color: rgb(146, 180, 184) !important;
+            color: #1a202c !important;
+          }
+        `}</style>
+
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+            <div key={d} className="text-center text-[10px] font-black uppercase tracking-widest text-white/30 py-2">
+              {d}
+            </div>
+          ))}
+
+          {calendarDays.map((day, idx) => {
+            const isSelected = isSameDay(day, selectedDate);
+            const isCurrentMonth = isSameMonth(day, monthStart);
+
+            return (
+              <button
+                key={idx}
+                onClick={() => setSelectedDate(day)}
+                className={cn(
+                  "relative h-20 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-1",
+                  !isCurrentMonth ? "opacity-20 border-transparent" : "border-white/5 bg-white/5 hover:bg-white/10",
+                  isSelected && "neon-day-active" // Áp dụng hiệu ứng sáng từ Uiverse
+                )}
+              >
+                <span className={cn("text-lg font-bold", isSelected ? "text-gray-900" : "text-white")}>
+                  {format(day, 'd')}
+                </span>
+                {/* Chấm đánh dấu nếu có task/note */}
+                <div className="flex gap-1">
+                  {tasks.some(t => isSameDay(new Date(t.createdAt), day)) && <div className="w-1 h-1 rounded-full bg-blue-400" />}
+                  {notes.some(n => isSameDay(new Date(n.updatedAt), day)) && <div className="w-1 h-1 rounded-full bg-yellow-400" />}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      );
+    };
+
     return (
-      <div className="grid grid-cols-7 mb-2">
-        {days.map((day) => (
-          <div key={day} className="text-center text-xs font-bold uppercase tracking-widest text-white/30 py-2">
-            {day}
+      <div className="flex flex-col h-full overflow-hidden text-white">
+        {renderHeader()}
+        <div className="flex-1 flex gap-6 overflow-hidden">
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            {renderDays()}
           </div>
-        ))}
+          {/* Phần chi tiết bên phải (Card detail) giữ nguyên... */}
+        </div>
       </div>
     );
   };
@@ -107,7 +143,7 @@ export const CalendarView = ({ tasks, notes }: CalendarViewProps) => {
               </div>
             )}
           </div>
-          
+
           <div className="mt-3 space-y-1.5 overflow-hidden">
             {dayTasks.slice(0, 2).map(task => (
               <div key={task.id} className="text-[10px] truncate bg-white/10 text-white px-2 py-1 rounded-lg flex items-center gap-1.5 font-bold border border-white/5">
