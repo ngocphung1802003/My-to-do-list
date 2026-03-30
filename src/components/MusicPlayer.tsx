@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ChevronDown, ChevronUp, Music } from 'lucide-react';
 
 export const MusicPlayer = () => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
     return (
         <div className="fixed bottom-8 right-8 z-[100] group select-none transition-all duration-500 hover:scale-110">
             <style>{`
@@ -19,7 +21,7 @@ export const MusicPlayer = () => {
           height: 100%;
           z-index: 10;
           position: absolute;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.8);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           border-radius: 20px;
@@ -35,7 +37,7 @@ export const MusicPlayer = () => {
           margin-top: 15px;
           font-size: 10px;
           border-radius: 12px;
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(0, 0, 0, 0.8);
           font-weight: bold;
           text-transform: uppercase;
         }
@@ -68,7 +70,7 @@ export const MusicPlayer = () => {
         }
 
         .artist-name {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(0, 0, 0, 0.5);
           font-size: 10px;
           margin-top: 5px;
         }
@@ -116,32 +118,43 @@ export const MusicPlayer = () => {
           pointer-events: none;
         }
       `}</style>
+            <div className={`music-card ${isCollapsed ? 'card-collapsed' : ''}`}>
+                <div className="card-glass group">
+                    {/* Nút thu nhỏ/mở rộng */}
+                    <button
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        className="absolute -top-2 -right-2 bg-white/20 p-1.5 rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity z-50 text-white"
+                    >
+                        {isCollapsed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </button>
 
-            <div className="music-card">
-                <div className="card-glass">
-                    <span className="title-tag">Now Playing</span>
-                    <div className="album-art">
-                        <svg className="w-8 h-8 text-white fill-current" viewBox="0 0 24 24">
-                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                        </svg>
-                    </div>
-                    <p className="song-name px-4">Nobody New</p>
-                    <p className="artist-name uppercase tracking-widest">The Marías</p>
-
-                    <div className="flex gap-4 mt-6 opacity-60">
-                        <div className="w-1 h-4 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                        <div className="w-1 h-6 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
-                        <div className="w-1 h-4 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                    </div>
+                    {!isCollapsed ? (
+                        <>
+                            <span className="text-[10px] text-white/50 font-bold uppercase mt-4 tracking-widest">Now Playing</span>
+                            <div className="album-art">
+                                <Music className="text-white w-8 h-8" />
+                            </div>
+                            <p className="text-white font-bold text-sm px-4 text-center truncate w-full">Nobody New</p>
+                            <p className="text-white/40 text-[10px] mt-1 uppercase tracking-widest">The Marías</p>
+                            <div className="flex gap-1.5 mt-6">
+                                {[0.1, 0.3, 0.2, 0.4].map((d, i) => (
+                                    <div key={i} className="w-1 h-4 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: `${d}s` }} />
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="album-art album-art-mini" onClick={() => setIsCollapsed(false)}>
+                            <Music className="text-white w-4 h-4" />
+                        </div>
+                    )}
                 </div>
 
                 <div className="lava-1"></div>
                 <div className="lava-2"></div>
 
-                {/* Iframe YouTube chạy ngầm, autoplay=1 để tự chạy */}
                 <iframe
                     className="youtube-hidden"
-                    src="https://www.youtube.com/embed/nTejAxg7byc?autoplay=1&mute=0&loop=1&playlist=nTejAxg7byc"
+                    src="https://www.youtube.com/embed/nTejAxg7byc?autoplay=1&mute=0&loop=1&playlist=nTejAxg7byc&enablejsapi=1"
                     allow="autoplay"
                 />
             </div>

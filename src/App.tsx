@@ -11,7 +11,7 @@ import { MindMap } from './components/MindMap';
 import { CalendarView } from './components/CalendarView';
 import { View, Task, Note } from './types';
 import { motion, AnimatePresence } from 'motion/react';
-import { MusicPlayer } from './components/MusicPlayer'; // Import MusicPlayer
+import { MusicPlayer } from './components/MusicPlayer';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('todo');
@@ -21,7 +21,6 @@ export default function App() {
     const saved = localStorage.getItem('aurora-tasks');
     if (saved) return JSON.parse(saved);
 
-    // Initial sample task as requested
     return [{
       id: 'sample-1',
       text: 'Your To Do List',
@@ -70,7 +69,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-screen h-screen flex overflow-hidden">
+    <div className="relative w-screen h-screen flex overflow-hidden bg-[#050505]">
       {/* Aurora Background Elements */}
       <div className="aurora-bg">
         <div className="aurora-blob blob-1" />
@@ -83,14 +82,18 @@ export default function App() {
       {/* Main Layout */}
       <Sidebar currentView={currentView} onViewChange={setCurrentView} />
 
-      <main className="flex-1 h-full p-8 overflow-hidden">
+      <main className="flex-1 h-full p-8 overflow-hidden relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentView}
-            initial={{ opacity: 0, filter: 'blur(10px)', scale: 0.98 }}
-            animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
-            exit={{ opacity: 0, filter: 'blur(10px)', scale: 0.98 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
+            /* HIỆU ỨNG CHUYỂN CẢNH MỚI: Trượt từ dưới lên (y: 20 -> 0) và Blur mượt */
+            initial={{ opacity: 0, y: 20, filter: 'blur(15px)', scale: 0.99 }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+            exit={{ opacity: 0, y: -20, filter: 'blur(15px)', scale: 0.99 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.23, 1, 0.32, 1] // Cubic-bezier tạo cảm giác chuyển động mượt mà của UI cao cấp
+            }}
             className="h-full"
           >
             {renderView()}
@@ -98,12 +101,12 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* Music Player - Luôn hiển thị ở lớp trên cùng */}
+      {/* Music Player - Floating ở trên cùng */}
       <MusicPlayer />
 
-      {/* Floating Decorative Blobs */}
-      <div className="fixed -bottom-20 -left-20 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="fixed -top-20 -right-20 w-64 h-64 bg-yellow-500/10 blur-[100px] rounded-full pointer-events-none" />
+      {/* Floating Decorative Blobs (Tăng độ blur và kích thước để nền sâu hơn) */}
+      <div className="fixed -bottom-20 -left-20 w-80 h-80 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed -top-20 -right-20 w-80 h-80 bg-yellow-500/10 blur-[120px] rounded-full pointer-events-none" />
     </div>
   );
 }
