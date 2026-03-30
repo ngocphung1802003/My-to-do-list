@@ -44,63 +44,43 @@ export const NotesView = ({ notes, setNotes }: NotesViewProps) => {
     }
   };
 
-  const filteredNotes = notes.filter(n => 
+  const filteredNotes = notes.filter(n =>
     n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     n.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6 h-full bg-white text-black">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight mb-1">Notes</h2>
-          <p className="text-white/50">Capture thoughts in the flow.</p>
+          <h2 className="text-3xl font-bold text-black">Notes</h2>
+          <p className="text-gray-500">Capture thoughts in the flow.</p>
         </div>
-        <Button onClick={addNote} className="rounded-2xl">
-          <Plus className="w-5 h-5 mr-2" />
-          New Note
+        <Button onClick={addNote} className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Plus className="w-5 h-5 mr-2" /> New Note
         </Button>
       </div>
 
       <div className="flex-1 flex gap-6 overflow-hidden">
-        {/* Sidebar List */}
-        <div className="w-80 flex flex-col gap-6">
-          <div className="relative">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
-            <input
-              type="text"
-              placeholder="Search notes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/10 border border-white/20 rounded-2xl pl-12 pr-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 transition-all text-white placeholder:text-white/40 shadow-lg"
-            />
-          </div>
-          
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+        {/* Sidebar */}
+        <div className="w-80 flex flex-col gap-4">
+          <input
+            className="bg-gray-50 border border-gray-200 text-black placeholder:text-gray-400 rounded-xl"
+          // ... các props khác
+          />
+          <div className="space-y-2">
             {filteredNotes.map((note) => (
               <button
                 key={note.id}
-                onClick={() => {
-                  setSelectedNoteId(note.id);
-                  setIsEditing(false);
-                }}
                 className={cn(
-                  'w-full text-left p-5 rounded-[24px] transition-all group relative overflow-hidden border',
-                  selectedNoteId === note.id 
-                    ? 'bg-white/20 border-white/40 shadow-xl scale-[1.02]' 
-                    : 'bg-white/5 border-transparent hover:bg-white/10 hover:border-white/10'
+                  'w-full text-left p-4 rounded-xl border transition-all',
+                  selectedNoteId === note.id
+                    ? 'bg-blue-50 border-blue-200 shadow-sm'
+                    : 'bg-white border-gray-100 hover:border-gray-300'
                 )}
               >
-                <h4 className="font-bold text-lg truncate mb-1.5">{note.title}</h4>
-                <p className="text-sm text-white/50 line-clamp-2 leading-relaxed">{note.content || 'No content yet...'}</p>
-                <div className="flex justify-between items-center mt-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-                    {new Date(note.updatedAt).toLocaleDateString()}
-                  </p>
-                  {selectedNoteId === note.id && (
-                    <div className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(255,209,45,0.8)]" />
-                  )}
-                </div>
+                <h4 className="font-bold text-black">{note.title}</h4>
+                <p className="text-gray-500 text-sm">{note.content}</p>
               </button>
             ))}
           </div>
@@ -132,17 +112,17 @@ export const NotesView = ({ notes, setNotes }: NotesViewProps) => {
                     )}
                     <div className="flex flex-col gap-2">
                       <div className="flex gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setIsEditing(!isEditing)}
                           className="rounded-xl"
                         >
                           {isEditing ? 'View' : <Edit3 className="w-4 h-4" />}
                         </Button>
-                        <Button 
-                          variant="danger" 
-                          size="sm" 
+                        <Button
+                          variant="danger"
+                          size="sm"
                           onClick={() => deleteNote(selectedNote.id)}
                           className="rounded-xl"
                         >
@@ -159,7 +139,7 @@ export const NotesView = ({ notes, setNotes }: NotesViewProps) => {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="flex-1 overflow-y-auto p-8">
                     {isEditing ? (
                       <textarea
