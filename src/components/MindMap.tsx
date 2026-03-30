@@ -13,7 +13,7 @@ import ReactFlow, {
   BackgroundVariant
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, Trash2, Palette, Type, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Palette } from 'lucide-react';
 import { Button } from './Button';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '../lib/utils';
@@ -35,7 +35,6 @@ const nodeStyle = {
   fontSize: '13px',
   fontWeight: '600',
   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-  transition: 'all 0.2s ease'
 };
 
 export const MindMap = () => {
@@ -47,7 +46,12 @@ export const MindMap = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   const onConnect: OnConnect = useCallback((params) =>
-    setEdges((eds) => addEdge({ ...params, animated: true, style: { stroke: '#3B82F6', strokeWidth: 2 } }, eds)),
+    setEdges((eds) => addEdge({
+      ...params,
+      animated: true,
+      style: { stroke: '#3B82F6', strokeWidth: 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#3B82F6' }
+    }, eds)),
     [setEdges]);
 
   const onSelectionChange = useCallback(({ nodes: selNodes }: { nodes: Node[] }) => {
@@ -57,6 +61,7 @@ export const MindMap = () => {
   const addNode = () => {
     const currentNode = nodes.find((n) => n.id === selectedNodeId);
     const newNodeId = uuidv4();
+    // Logic: Xuất hiện bên phải node cũ
     const newPos = currentNode
       ? { x: currentNode.position.x + 220, y: currentNode.position.y + 40 }
       : { x: 400, y: 400 };
@@ -64,23 +69,27 @@ export const MindMap = () => {
     const newNode: Node = {
       id: newNodeId,
       position: newPos,
-      data: { label: nodeName || 'New Concept' },
-      style: { ...nodeStyle, border: currentNode ? `1px solid ${currentNode.style?.border?.split(' ')[2] || '#3B82F6'}` : '1px solid #3B82F6' }
+      data: { label: nodeName || 'New Node' },
+      style: { ...nodeStyle, border: '1px solid #3B82F6' }
     };
 
     setNodes((nds) => nds.concat(newNode));
     if (selectedNodeId) {
-      setEdges((eds) => addEdge({ id: `e-${selectedNodeId}-${newNodeId}`, source: selectedNodeId, target: newNodeId, animated: true, style: { stroke: '#3B82F6', strokeWidth: 2 } }, eds));
+      setEdges((eds) => addEdge({
+        id: `e-${selectedNodeId}-${newNodeId}`,
+        source: selectedNodeId,
+        target: newNodeId,
+        animated: true,
+        style: { stroke: '#3B82F6', strokeWidth: 2 }
+      }, eds));
     }
     setNodeName('');
   };
 
-  // Cập nhật tên node đang chọn
   const updateNodeLabel = (label: string) => {
     setNodes((nds) => nds.map((n) => n.id === selectedNodeId ? { ...n, data: { ...n.data, label } } : n));
   };
 
-  // Cập nhật màu node đang chọn
   const updateNodeColor = (color: string) => {
     setNodes((nds) => nds.map((n) => n.id === selectedNodeId ? { ...n, style: { ...n.style, border: `2px solid ${color}` } } : n));
   };
@@ -88,67 +97,76 @@ export const MindMap = () => {
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   return (
-    <div className="flex flex-col h-full bg-white text-black p-6">
-      <div className="mb-6">
-        <h2 className="text-3xl font-black tracking-tighter text-black">MIND MAP</h2>
-        <div className="h-1 w-12 bg-blue-600 rounded-full mt-1" />
+    <div className="flex flex-col gap-6 h-full text-white">
+      {/* Header ngoài vùng trắng (giữ text trắng trên nền Aurora) */}
+      <div className="flex justify-between items-end px-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight mb-1">Mind Map</h2>
+          <p className="opacity-60">Visualize connections and ideas.</p>
+        </div>
       </div>
 
-      <div className="flex-1 bg-[#fafafa] rounded-[32px] overflow-hidden relative border border-gray-100 shadow-inner">
+      {/* CANVAS VÙNG TRẮNG */}
+      <div className="flex-1 bg-white rounded-[32px] overflow-hidden relative border border-white/20 shadow-2xl">
         <ReactFlow
-          nodes={nodes} edges={edges}
-          onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
-          onConnect={onConnect} onSelectionChange={onSelectionChange}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onSelectionChange={onSelectionChange}
           fitView
         >
-          <Background color="#000" gap={25} variant={BackgroundVariant.Dots} size={1} opacity={0.08} />
-          <Controls className="!bg-white !border-gray-200 !shadow-2xl !rounded-xl !fill-black scale-110" />
+          {/* Nền chấm đen */}
+          <Background color="#000000" gap={25} variant={BackgroundVariant.Dots} size={1} opacity={0.1} />
 
-          {/* PANEL TẠO NODE NHANH */}
+          {/* Controls màu đen rõ nét trên nền trắng */}
+          <Controls className="!bg-white !border-gray-200 !shadow-xl !fill-black scale-110 !left-6 !bottom-6" />
+
+          {/* Panel tạo Node nhanh */}
           <Panel position="top-left" className="m-4">
-            <div className="bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex gap-2 items-center">
-              <input
-                value={nodeName}
-                onChange={(e) => setNodeName(e.target.value)}
-                placeholder="Ý tưởng mới..."
-                className="bg-transparent px-4 py-2 text-sm outline-none w-40 font-medium"
-              />
-              <Button onClick={addNode} size="sm" className="bg-black text-white hover:bg-blue-600 transition-colors rounded-xl px-4">
-                <Plus className="w-4 h-4 mr-1" /> Add
-              </Button>
+            <div className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-gray-100 flex flex-col gap-4 w-64 text-black">
+              <div className="text-[10px] font-bold uppercase text-blue-600 tracking-widest">Create Node</div>
+              <div className="flex gap-2">
+                <input
+                  value={nodeName}
+                  onChange={(e) => setNodeName(e.target.value)}
+                  placeholder="Ý tưởng mới..."
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-black outline-none w-full"
+                />
+                <Button size="sm" onClick={addNode} className="bg-blue-600 text-white rounded-xl">Add</Button>
+              </div>
             </div>
           </Panel>
 
-          {/* FLOATING INSPECTOR: Chỉ hiện khi chọn Node */}
+          {/* Panel chỉnh sửa Node khi được chọn */}
           {selectedNode && (
             <Panel position="top-right" className="m-4">
-              <div className="bg-white/90 backdrop-blur-md p-5 rounded-[24px] shadow-2xl border border-gray-100 w-64 flex flex-col gap-4 animate-in fade-in slide-in-from-right-4">
+              <div className="bg-white/90 backdrop-blur-md p-5 rounded-[24px] shadow-2xl border border-gray-100 w-64 flex flex-col gap-4 text-black animate-in fade-in slide-in-from-right-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Edit Node</span>
-                  <button onClick={() => setSelectedNodeId(null)} className="text-gray-400 hover:text-black">×</button>
+                  <span className="text-[10px] font-black uppercase text-blue-600">Edit Node</span>
+                  <button onClick={() => setSelectedNodeId(null)} className="text-gray-400">×</button>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Label</label>
-                  <div className="relative">
-                    <input
-                      value={selectedNode.data.label}
-                      onChange={(e) => updateNodeLabel(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm font-semibold focus:border-blue-400 outline-none transition"
-                    />
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400">LABEL</label>
+                  <input
+                    value={selectedNode.data.label}
+                    onChange={(e) => updateNodeLabel(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm font-semibold text-black outline-none"
+                  />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Theme Color</label>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400">THEME COLOR</label>
                   <div className="flex gap-2">
                     {COLORS.map((c) => (
                       <button
                         key={c.value}
                         onClick={() => updateNodeColor(c.value)}
                         className={cn(
-                          "w-6 h-6 rounded-full border-2 transition-transform hover:scale-110",
-                          selectedNode.style?.border?.includes(c.value) ? "border-black" : "border-transparent"
+                          "w-6 h-6 rounded-full border-2 transition-all",
+                          selectedNode.style?.border?.includes(c.value) ? "border-black scale-110" : "border-transparent"
                         )}
                         style={{ backgroundColor: c.value }}
                       />
