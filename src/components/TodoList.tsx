@@ -65,13 +65,88 @@ export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
   return (
     <div className="flex flex-col gap-8 h-full max-w-4xl mx-auto py-4">
       <style>{`
-        .quote-card { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; max-width: 450px; border-radius: 24px; line-height: 1.6; transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); margin-top: 40px; }
-        .quote-content { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 36px; border-radius: 22px; color: #ffffff; overflow: visible; background: #0a3cff; transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); z-index: 1; position: relative; width: 100%; }
-        .quote-content::before { position: absolute; content: ""; top: -4%; left: 50%; width: 90%; height: 90%; transform: translate(-50%); background: #ced8ff; z-index: -1; transform-origin: bottom; border-radius: inherit; transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); }
-        .quote-content::after { position: absolute; content: ""; top: -8%; left: 50%; width: 80%; height: 80%; transform: translate(-50%); background: #e7ecff; z-index: -2; transform-origin: bottom; border-radius: inherit; transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1); }
-        .quote-card:hover { transform: translate(0px, -16px); }
-        .quote-card:hover .quote-content::before { rotate: -8deg; top: 0; width: 100%; height: 100%; }
-        .quote-card:hover .quote-content::after { rotate: 8deg; top: 0; width: 100%; height: 100%; }
+      .quote-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 24px;
+  line-height: 1.6;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+  margin-top: 40px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 36px;
+  border-radius: 22px;
+  color: #ffffff;
+  overflow: visible; /* Đổi thành visible để các lớp sau hiện ra */
+  background: #0a3cff;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  z-index: 10; /* Đưa thẻ xanh lên cao nhất */
+}
+
+/* Lớp thẻ thứ 2 */
+.content::before {
+  position: absolute;
+  content: "";
+  top: -4%;
+  left: 50%;
+  width: 90%;
+  height: 90%;
+  transform: translate(-50%);
+  background: #ced8ff;
+  z-index: -1; /* Nằm dưới thẻ content */
+  opacity: 0.5; /* Opacity 50% như bạn yêu cầu */
+  transform-origin: bottom;
+  border-radius: inherit;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Lớp thẻ thứ 3 */
+.content::after {
+  position: absolute;
+  content: "";
+  top: -8%;
+  left: 50%;
+  width: 80%;
+  height: 80%;
+  transform: translate(-50%);
+  background: #e7ecff;
+  z-index: -2; /* Nằm dưới cùng */
+  opacity: 0.5; /* Opacity 50% */
+  transform-origin: bottom;
+  border-radius: inherit;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Hiệu ứng hover */
+.card:hover {
+  transform: translate(0px, -16px);
+}
+
+.card:hover .content::before {
+  rotate: -8deg;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8; /* Khi hover có thể tăng nhẹ độ rõ nếu muốn */
+}
+
+.card:hover .content::after {
+  rotate: 8deg;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
       `}</style>
 
       {/* Input Section */}
