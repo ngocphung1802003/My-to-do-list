@@ -16,7 +16,18 @@ import { MusicPlayer } from './components/MusicPlayer';
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('todo');
 
-  // State for data
+  // --- LOGIC THEO DÕI TỌA ĐỘ CHUỘT (Dùng cho Spotlight Effect trong index.css) ---
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // State for Tasks
   const [tasks, setTasks] = useState<Task[]>(() => {
     const saved = localStorage.getItem('aurora-tasks');
     if (saved) return JSON.parse(saved);
@@ -31,6 +42,7 @@ export default function App() {
     }];
   });
 
+  // State for Notes
   const [notes, setNotes] = useState<Note[]>(() => {
     const saved = localStorage.getItem('aurora-notes');
     return saved ? JSON.parse(saved) : [
@@ -44,16 +56,7 @@ export default function App() {
     ];
   });
 
-  // Persistence
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
+  // Persistence (Lưu dữ liệu vào LocalStorage)
   useEffect(() => {
     localStorage.setItem('aurora-tasks', JSON.stringify(tasks));
   }, [tasks]);
@@ -61,6 +64,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('aurora-notes', JSON.stringify(notes));
   }, [notes]);
+
 
   const renderView = () => {
     switch (currentView) {
@@ -78,30 +82,34 @@ export default function App() {
   };
 
   return (
+    /* Background màu tối #050505 giúp hiệu ứng Aurora và Mouse Spotlight nổi bật hơn */
     <div className="relative w-screen h-screen flex overflow-hidden bg-[#050505]">
-      {/* Aurora Background Elements */}
-      <div className="aurora-bg">
+
+      {/* Aurora Background Elements - Lớp nền chuyển động */}
+      <div className="aurora-bg fixed inset-0">
         <div className="aurora-blob blob-1" />
         <div className="aurora-blob blob-2" />
         <div className="aurora-blob blob-3" />
         <div className="aurora-blob blob-4" />
       </div>
-      <div className="grain-overlay" />
 
-      {/* Main Layout */}
+      {/* Grain Overlay - Lớp hạt mờ chứa hiệu ứng Mouse Spotlight */}
+      <div className="grain-overlay fixed inset-0" />
+
+      {/* Main Layout - Sidebar & Content */}
       <Sidebar currentView={currentView} onViewChange={setCurrentView} />
 
-      <main className="flex-1 h-full p-8 overflow-hidden relative">
+      <main className="flex-1 h-full p-8 overflow-hidden relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentView}
-            /* HIỆU ỨNG CHUYỂN CẢNH MỚI: Trượt từ dưới lên (y: 20 -> 0) và Blur mượt */
+            /* Transition mượt mà khi chuyển Tab */
             initial={{ opacity: 0, y: 20, filter: 'blur(15px)', scale: 0.99 }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
             exit={{ opacity: 0, y: -20, filter: 'blur(15px)', scale: 0.99 }}
             transition={{
               duration: 0.5,
-              ease: [0.23, 1, 0.32, 1] // Cubic-bezier tạo cảm giác chuyển động mượt mà của UI cao cấp
+              ease: [0.23, 1, 0.32, 1]
             }}
             className="h-full"
           >
@@ -110,10 +118,10 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* Music Player - Floating ở trên cùng */}
+      {/* Music Player Widget */}
       <MusicPlayer />
 
-      {/* Floating Decorative Blobs (Tăng độ blur và kích thước để nền sâu hơn) */}
+      {/* Decorative Glows (Tạo độ sâu cho bốn góc màn hình) */}
       <div className="fixed -bottom-20 -left-20 w-80 h-80 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed -top-20 -right-20 w-80 h-80 bg-yellow-500/10 blur-[120px] rounded-full pointer-events-none" />
     </div>
