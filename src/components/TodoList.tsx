@@ -20,7 +20,7 @@ export const TodoList = ({ tasks, setTasks }: TodoListProps) => {
     if (tasks.length === 0) {
       const fetchQuote = async () => {
         try {
-          const response = await fetch('https://api.api-ninjas.com/v1/quotes?category=inspirational', {
+          const response = await fetch('https://api.api-ninjas.com/v2/randomquotes?categories=success,wisdom', {
             headers: { 'X-Api-Key': '7rk4MKnNmwhwFUEsYxvJdVDwy1pqIoSvzDgzFAO9' },
           });
           const data = await response.json();
