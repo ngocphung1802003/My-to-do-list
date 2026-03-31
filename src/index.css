@@ -23,6 +23,26 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Thêm vào index.css */
+.glass-card {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.4s ease,
+    background 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+.glass-card:hover {
+  transform: translateY(-8px) scale(1.02) rotateX(2deg) rotateY(-2deg);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-card:active {
+  transform: scale(0.98);
+}
+
 /* --- HIỆU ỨNG CHUỘT (SPOTLIGHT) --- */
 .grain-overlay::before {
   content: "";
